@@ -1,0 +1,64 @@
+## Ignore Visual Studio temporary files, build outputs, and user-specific files
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+artifacts/
+
+# Visual Studio workspace
+.vs/
+
+# Rider
+.idea/
+*.sln.iml
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+.nuget/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# DotNet publish
+publish/
+
+# Test results
+TestResults/
+*.trx
+
+# Logs
+*.log
+
+# OS generated files
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Resharper & Rider caches
+_ReSharper*/
+*.ReSharper
+*.DotSettings.user
+
+# Coverage and profiler
+coverage*
+*.coverage
+*.coveragexml
+*.psess
+*.vsp
+*.vspx
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.pidb
+*.userprefs

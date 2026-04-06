@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="FormulaAirline.API/FormulaAirline.API.csproj" />
+  <Project Path="Formular.TicketProcessing/FormulaAirline.TicketProcessing.csproj" Id="e1d3213a-99a9-4e0f-9766-76170b6ea002" />
+</Solution>
