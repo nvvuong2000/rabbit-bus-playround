@@ -12,18 +12,27 @@ var factory = new ConnectionFactory()
 using var connection = await factory.CreateConnectionAsync();
 using var channel = await connection.CreateChannelAsync();
 
- await channel.QueueDeclareAsync(queue: "bookings", durable: true, exclusive: false, autoDelete: false,
-    arguments: new Dictionary<string, object?> { { "x-queue-type", "quorum" } });
+var exchange = "ticket.events";
+var queue = "ticket.processing.queue";
 
-var consume = new AsyncEventingBasicConsumer(channel);
+await channel.ExchangeDeclareAsync(exchange, ExchangeType.Direct);
 
-consume.ReceivedAsync += async (model, eventArgs) =>
+await channel.QueueDeclareAsync(queue, true, false, false);
+
+await channel.QueueBindAsync(queue, exchange, "ticket.created");
+
+Console.WriteLine("Waiting for ticket.created...");
+
+var consumer = new AsyncEventingBasicConsumer(channel);
+
+consumer.ReceivedAsync += async (model, ea) =>
 {
-    var body = eventArgs.Body.ToArray();
-    var message = Encoding.UTF8.GetString(body);
-    Console.WriteLine($"A message has been received: {message}");
-};
-await channel.BasicConsumeAsync("bookings", autoAck: true, consume);
+    var message = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-Console.WriteLine(" Press [enter] to exit.");
+    Console.WriteLine("Ticket Processing Service");
+    Console.WriteLine(message);
+};
+
+await channel.BasicConsumeAsync(queue, true, consumer);
+
 Console.ReadLine();

@@ -19,15 +19,40 @@ namespace FormulaAirline.API.Services
             var connection = await factory.CreateConnectionAsync();
 
             using var channel = await connection.CreateChannelAsync();
+            var exchangeName = "ticket.events";
+            Console.WriteLine("Enter event type:");
+            Console.WriteLine("1 = ticket.created");
+            Console.WriteLine("2 = ticket.cancelled");
+            Console.WriteLine("3 = ticket.updated");
 
-            await channel.QueueDeclareAsync(queue: "bookings", durable: true, exclusive: false, autoDelete: false, arguments: new Dictionary<string, object?> { { "x-queue-type", "quorum" } });
+            var option = Console.ReadLine();
+
+            string routingKey = option switch
+            {
+                "1" => "ticket.created",
+                "2" => "ticket.cancelled",
+                "3" => "ticket.updated",
+                _ => "ticket.created"
+            };
+
+            var ticketEvent = new
+            {
+                TicketId = Guid.NewGuid().ToString(),
+                Passenger = "Vuong",
+                Route = "SGN-HAN",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var json = JsonSerializer.Serialize(ticketEvent);
+            var body = Encoding.UTF8.GetBytes(json);
+
+            await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Direct, durable: false);
 
             var jsonString = JsonSerializer.Serialize(message);
 
-            var body = Encoding.UTF8.GetBytes(jsonString);
 
-            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: "bookings", body: body);
-            Console.WriteLine($" [x] Sent {message}");
+            await channel.BasicPublishAsync(exchange: exchangeName, routingKey: routingKey, body: body);
+            Console.WriteLine($" [x] Sent {message}, messgae {routingKey}");
 
             Console.WriteLine(" Press [enter] to exit.");
             Console.ReadLine();
